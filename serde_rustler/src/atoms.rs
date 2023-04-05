@@ -1,36 +1,35 @@
-//! Constants and utilities for conversion between Rust string-likes and Elixir atoms.
+//! Constants and utilities for conversion between Rust string-likes and Elixir
+//! atoms.
+
+use rustler::{atoms, types::atom::Atom, Encoder, Env, Term};
 
 use crate::Error;
-use rustler::{types::atom::Atom, Encoder, Env, Term};
 
-lazy_static! {
-    pub static ref OK: String = String::from("Ok");
-    pub static ref ERROR: String = String::from("Err");
-}
+pub const OK: &str = "Ok";
+pub const ERROR: &str = "Err";
 
-rustler_atoms! {
+atoms! {
     /// The atom `nil`.
-    atom nil;
+    nil,
 
     /// The atom `:ok`.
-    atom ok;
+    ok,
 
     /// The atom `:error`.
-    atom error;
+    error,
 
     /// The atom/Boolean `true`.
-    atom true_ = "true";
+    true_ = "true",
 
     /// The atom/Boolean `false`.
-    atom false_ = "false";
+    false_ = "false",
 
     /// The atom `:__struct__`.
-    atom __struct__;
+    __struct__,
 }
 
-/**
- * Attempts to create an atom term from the provided string (if the atom already exists in the atom table). If not, returns a string term.
- */
+/// Attempts to create an atom term from the provided string (if the atom
+/// already exists in the atom table). If not, returns a string term.
 pub fn str_to_term<'a>(env: &Env<'a>, string: &str) -> Result<Term<'a>, Error> {
     if string == "Ok" {
         Ok(ok().encode(*env))
@@ -45,9 +44,7 @@ pub fn str_to_term<'a>(env: &Env<'a>, string: &str) -> Result<Term<'a>, Error> {
     }
 }
 
-/**
- * Attempts to create a `String` from the term.
- */
+/// Attempts to create a `String` from the term.
 pub fn term_to_string(term: &Term) -> Result<String, Error> {
     if ok().eq(term) {
         Ok(OK.to_string())

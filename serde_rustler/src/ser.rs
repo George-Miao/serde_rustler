@@ -1,13 +1,13 @@
-use crate::{atoms, error::Error, util};
 use rustler::{types::tuple, Encoder, Env, OwnedBinary, Term};
 use serde::{
     ser::{self, Serialize},
     serde_if_integer128,
 };
 
+use crate::{atoms, error::Error, util};
+
 #[inline]
-/// Converts a native Rust type into a native Elixir term. See [conversion table](https://github.com/sunny-g/serde_rustler/tree/master/serde_rustler#conversion-table) for details about serialization behavior.
-///
+/// Converts a native Rust type into a native Elixir term. See [conversion table](https://github.com/George-Miao/serde_rustler/tree/master/serde_rustler#conversion-table) for details about serialization behavior.
 pub fn to_term<T>(env: Env, value: T) -> Result<Term, Error>
 where
     T: Serialize,
@@ -27,16 +27,26 @@ impl<'a> From<Env<'a>> for Serializer<'a> {
 }
 
 impl<'a> ser::Serializer for Serializer<'a> {
-    type Ok = Term<'a>;
     type Error = Error;
-
+    type Ok = Term<'a>;
+    type SerializeMap = MapSerializer<'a>;
     type SerializeSeq = SequenceSerializer<'a>;
+    type SerializeStruct = MapSerializer<'a>;
+    type SerializeStructVariant = MapSerializer<'a>;
     type SerializeTuple = SequenceSerializer<'a>;
     type SerializeTupleStruct = SequenceSerializer<'a>;
     type SerializeTupleVariant = SequenceSerializer<'a>;
-    type SerializeMap = MapSerializer<'a>;
-    type SerializeStruct = MapSerializer<'a>;
-    type SerializeStructVariant = MapSerializer<'a>;
+
+    // TODO: update rustler to support u128 and i128
+    serde_if_integer128! {
+        fn serialize_i128(self, _v: i128) -> Result<Self::Ok, Self::Error> {
+            unimplemented!("awaiting rustler support for i128s")
+        }
+
+        fn serialize_u128(self, _v: u128) -> Result<Self::Ok, Self::Error> {
+            unimplemented!("awaiting rustler support for u128s")
+        }
+    }
 
     #[inline]
     fn serialize_bool(self, v: bool) -> Result<Self::Ok, Self::Error> {
@@ -104,17 +114,6 @@ impl<'a> ser::Serializer for Serializer<'a> {
     #[inline]
     fn serialize_f64(self, v: f64) -> Result<Self::Ok, Self::Error> {
         Ok(v.encode(self.env))
-    }
-
-    // TODO: update rustler to support u128 and i128
-    serde_if_integer128! {
-        fn serialize_i128(self, _v: i128) -> Result<Self::Ok, Self::Error> {
-            unimplemented!("awaiting rustler support for i128s")
-        }
-
-        fn serialize_u128(self, _v: u128) -> Result<Self::Ok, Self::Error> {
-            unimplemented!("awaiting rustler support for u128s")
-        }
     }
 
     #[inline]
@@ -229,7 +228,8 @@ impl<'a> ser::Serializer for Serializer<'a> {
     }
 
     #[inline]
-    /// Serializes `E::T` of `enum E { T(u8, u8) }` as an Elixir Record or Record-like tuple: `{:T, u8, u8}` or `{"T", u8, u8}`.
+    /// Serializes `E::T` of `enum E { T(u8, u8) }` as an Elixir Record or
+    /// Record-like tuple: `{:T, u8, u8}` or `{"T", u8, u8}`.
     fn serialize_tuple_variant(
         self,
         _name: &'static str,
@@ -312,8 +312,8 @@ impl<'a> SequenceSerializer<'a> {
 }
 
 impl<'a> ser::SerializeSeq for SequenceSerializer<'a> {
-    type Ok = Term<'a>;
     type Error = Error;
+    type Ok = Term<'a>;
 
     #[inline]
     fn serialize_element<T>(&mut self, value: &T) -> Result<(), Error>
@@ -331,8 +331,8 @@ impl<'a> ser::SerializeSeq for SequenceSerializer<'a> {
 }
 
 impl<'a> ser::SerializeTuple for SequenceSerializer<'a> {
-    type Ok = Term<'a>;
     type Error = Error;
+    type Ok = Term<'a>;
 
     #[inline]
     fn serialize_element<T>(&mut self, value: &T) -> Result<(), Error>
@@ -350,8 +350,8 @@ impl<'a> ser::SerializeTuple for SequenceSerializer<'a> {
 }
 
 impl<'a> ser::SerializeTupleStruct for SequenceSerializer<'a> {
-    type Ok = Term<'a>;
     type Error = Error;
+    type Ok = Term<'a>;
 
     #[inline]
     fn serialize_field<T>(&mut self, value: &T) -> Result<(), Error>
@@ -368,8 +368,8 @@ impl<'a> ser::SerializeTupleStruct for SequenceSerializer<'a> {
 }
 
 impl<'a> ser::SerializeTupleVariant for SequenceSerializer<'a> {
-    type Ok = Term<'a>;
     type Error = Error;
+    type Ok = Term<'a>;
 
     #[inline]
     fn serialize_field<T>(&mut self, value: &T) -> Result<(), Error>
@@ -446,8 +446,8 @@ impl<'a> MapSerializer<'a> {
 }
 
 impl<'a> ser::SerializeMap for MapSerializer<'a> {
-    type Ok = Term<'a>;
     type Error = Error;
+    type Ok = Term<'a>;
 
     #[inline]
     fn serialize_key<T>(&mut self, key: &T) -> Result<(), Error>
@@ -473,8 +473,8 @@ impl<'a> ser::SerializeMap for MapSerializer<'a> {
 }
 
 impl<'a> ser::SerializeStruct for MapSerializer<'a> {
-    type Ok = Term<'a>;
     type Error = Error;
+    type Ok = Term<'a>;
 
     #[inline]
     fn serialize_field<T>(&mut self, key: &'static str, value: &T) -> Result<(), Error>
@@ -493,8 +493,8 @@ impl<'a> ser::SerializeStruct for MapSerializer<'a> {
 }
 
 impl<'a> ser::SerializeStructVariant for MapSerializer<'a> {
-    type Ok = Term<'a>;
     type Error = Error;
+    type Ok = Term<'a>;
 
     #[inline]
     fn serialize_field<T>(&mut self, key: &'static str, value: &T) -> Result<(), Error>

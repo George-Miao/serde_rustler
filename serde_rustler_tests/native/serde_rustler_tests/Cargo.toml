@@ -1,21 +1,18 @@
 [package]
-name = "serde_rustler_tests"
+name    = "serde_rustler_tests"
 version = "0.0.1"
-authors = ["Sunny G <sunny.gonna@gmail.com>"]
+authors = ["George Miao <gm@miao.dev>"]
 edition = "2018"
 publish = false
 
 [lib]
-name = "serde_rustler_tests"
-path = "src/lib.rs"
+name       = "serde_rustler_tests"
+path       = "src/lib.rs"
 crate-type = ["cdylib"]
 
 [dependencies]
-lazy_static = "1.0"
-rustler = "0.21.0"
-rustler_codegen = "0.21.0"
-serde = { version = "1.0", features = ["derive"] }
-serde_bytes = "0.11"
-serde_json = "1.0"
-serde_rustler = { path = "../../../serde_rustler" }
+serde           = { version = "1.0", features = ["derive"] }
+serde_bytes     = "0.11"
+serde_json      = "1.0"
+serde_rustler   = { path = "../../../serde_rustler" }
 serde-transcode = "1.1"

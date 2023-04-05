@@ -1,7 +1,7 @@
 # serde_rustler
 
 <!-- [![GitHub tag](https://img.shields.io/github/tag/Naereen/StrapDown.js.svg)](https://GitHub.com/Naereen/StrapDown.js/tags/) -->
-<!-- [![Build Status](https://semaphoreci.com/api/v1/sunny-g/xdr/branches/master/badge.svg)](https://semaphoreci.com/sunny-g/xdr) -->
+<!-- [![Build Status](https://semaphoreci.com/api/v1/George-Miao/xdr/branches/master/badge.svg)](https://semaphoreci.com/George-Miao/xdr) -->
 [![Crates.io](https://img.shields.io/crates/v/serde_rustler.svg)](https://crates.io/crates/serde_rustler)
 [![Documentation](https://docs.rs/serde_rustler/badge.svg)](https://docs.rs/serde_rustler)
 [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://lbesson.mit-license.org/)
@@ -161,23 +161,24 @@ end
 
 <a name="todo">1</a>: API still being decided / implemented.
 
-<a name="atom">2</a>: When serializing unknown input to terms, atoms will not be created and will instead be replaced with Elixir bitstrings. Therefore "records" will be tuples (`{bitstring, ...}`) and "structs" will be maps containing `%{:__struct__ => bitstring}`. The unfortunate consequence of this is that `deserialize_any` will lack the necessary information needed deserialize many terms without type hints, such as `structs`, `enums` and `enum variants`, and `tuples`. (Feedback on how best to solve this is very welcome [here](https://github.com/sunny-g/serde_rustler/issues/2)).
+<a name="atom">2</a>: When serializing unknown input to terms, atoms will not be created and will instead be replaced with Elixir bitstrings. Therefore "records" will be tuples (`{bitstring, ...}`) and "structs" will be maps containing `%{:__struct__ => bitstring}`. The unfortunate consequence of this is that `deserialize_any` will lack the necessary information needed deserialize many terms without type hints, such as `structs`, `enums` and `enum variants`, and `tuples`. (Feedback on how best to solve this is very welcome [here](https://github.com/George-Miao/serde_rustler/issues/2)).
 
 ## Benchmarks
 
 To run:
+
 ```sh
 cd serde_rustler_tests
 MIX_ENV=bench mix run test/benchmarks.exs
 ```
 
-[Benchmarks](https://github.com/sunny-g/serde_rustler/blob/master/serde_rustler_tests/test/benchmarks.exs) were ripped from the [Poison](https://github.com/devinus/poison) repo. The NIFs being called were implemented using [`serde-transcode`](https://github.com/sfackler/serde-transcode) to translate between `serde_rustler` and [`serde_json`](https://github.com/serde-rs/json) and were compiled in `:release` mode by `rustler`.
+[Benchmarks](https://github.com/George-Miao/serde_rustler/blob/master/serde_rustler_tests/test/benchmarks.exs) were ripped from the [Poison](https://github.com/devinus/poison) repo. The NIFs being called were implemented using [`serde-transcode`](https://github.com/sfackler/serde-transcode) to translate between `serde_rustler` and [`serde_json`](https://github.com/serde-rs/json) and were compiled in `:release` mode by `rustler`.
 
 NOTE: If someone can point out any mistakes I made that led to these ridiculous results, please let me know :)
 
-Benchmarks suggest that **`serde_rustler` is somewhat faster than [`jiffy`](https://github.com/davisp/jiffy) when [encoding](https://github.com/sunny-g/serde_rustler/blob/master/serde_rustler_tests/output/encode.md) JSON**, and generally comparable to / **no more than ~2-3x as slow as [`jiffy`](https://github.com/davisp/jiffy) or [`jason`](https://github.com/michalmuskala/jason) when [decoding](https://github.com/sunny-g/serde_rustler/blob/master/serde_rustler_tests/output/decode.md) JSON**, and in almost all cases, `serde_rustler` **seems to use significantly less memory than pure-Elixir alternatives**, though this is likely has to do with running a NIF rather than an pure-Elixir function.
+Benchmarks suggest that **`serde_rustler` is somewhat faster than [`jiffy`](https://github.com/davisp/jiffy) when [encoding](https://github.com/George-Miao/serde_rustler/blob/master/serde_rustler_tests/output/encode.md) JSON**, and generally comparable to / **no more than ~2-3x as slow as [`jiffy`](https://github.com/davisp/jiffy) or [`jason`](https://github.com/michalmuskala/jason) when [decoding](https://github.com/George-Miao/serde_rustler/blob/master/serde_rustler_tests/output/decode.md) JSON**, and in almost all cases, `serde_rustler` **seems to use significantly less memory than pure-Elixir alternatives**, though this is likely has to do with running a NIF rather than an pure-Elixir function.
 
-Also take note of the results for any test taking longer than 1ms or tests involving the larger inputs `govtrack.json` (3.74 MB) and `issue-90.json` (7.75 MB) - the `encode_json_compact` and `decode_json` NIFs have significantly higher variation in performance while their [dirty](http://erlang.org/doc/man/erl_nif.html) [equivalents](https://github.com/sunny-g/serde_rustler/blob/master/serde_rustler_tests/native/serde_rustler_tests/src/lib.rs#L21) `encode_json_compact_dirty` and `decode_json_dirty` are comparable to the originals in speed and have more reliable performance.
+Also take note of the results for any test taking longer than 1ms or tests involving the larger inputs `govtrack.json` (3.74 MB) and `issue-90.json` (7.75 MB) - the `encode_json_compact` and `decode_json` NIFs have significantly higher variation in performance while their [dirty](http://erlang.org/doc/man/erl_nif.html) [equivalents](https://github.com/George-Miao/serde_rustler/blob/master/serde_rustler_tests/native/serde_rustler_tests/src/lib.rs#L21) `encode_json_compact_dirty` and `decode_json_dirty` are comparable to the originals in speed and have more reliable performance.
 
 ## TODO
 
@@ -197,7 +198,7 @@ Also take note of the results for any test taking longer than 1ms or tests invol
 
 ## Contributing
 
-1. Fork it [https://github.com/your_username/serde_rustler/fork](https://github.com/sunny-g/serde_rustler/fork)
+1. Fork it [https://github.com/your_username/serde_rustler/fork](https://github.com/George-Miao/serde_rustler/fork)
 2. Create your feature branch (`git checkout -b feature/fooBar`)
 3. Commit your changes (`git commit -am 'Add some fooBar'`)
 4. Push to the branch (`git push origin feature/fooBar`)
@@ -205,7 +206,7 @@ Also take note of the results for any test taking longer than 1ms or tests invol
 
 ## Maintainers
 
-- Sunny G - [@sunny-g](https://github.com/sunny-g)
+- George Miao - [@George-Miao](https://github.com/George-Miao)
 
 <!-- ## Contributors -->
 

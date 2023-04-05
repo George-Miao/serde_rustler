@@ -1,4 +1,5 @@
-use crate::{atoms, error::Error, util};
+use std::iter;
+
 use rustler::{
     types::{ListIterator, MapIterator},
     Term, TermType,
@@ -10,9 +11,10 @@ use serde::{
     },
     forward_to_deserialize_any,
 };
-use std::iter;
 
-/// Converts a native Elixir term to a native Rust type. See the [conversion table](https://github.com/sunny-g/serde_rustler/tree/master/serde_rustler#conversion-table) for details about deserialization behavior.
+use crate::{atoms, error::Error, util};
+
+/// Converts a native Elixir term to a native Rust type. See the [conversion table](https://github.com/George-Miao/serde_rustler/tree/master/serde_rustler#conversion-table) for details about deserialization behavior.
 #[inline]
 pub fn from_term<'de, 'a: 'de, T>(term: Term<'a>) -> Result<T, Error>
 where
@@ -696,6 +698,12 @@ impl<'a> From<Term<'a>> for VariantNameDeserializer<'a> {
 impl<'de, 'a: 'de> de::Deserializer<'de> for VariantNameDeserializer<'a> {
     type Error = Error;
 
+    forward_to_deserialize_any! {
+        bool i8 i16 i32 i64 i128 u8 u16 u32 u64 u128 f32 f64 char str string
+            bytes byte_buf option unit unit_struct newtype_struct seq tuple
+            tuple_struct map struct enum identifier ignored_any
+    }
+
     #[inline]
     fn deserialize_any<V>(self, visitor: V) -> Result<V::Value, Error>
     where
@@ -711,11 +719,5 @@ impl<'de, 'a: 'de> de::Deserializer<'de> for VariantNameDeserializer<'a> {
             TermType::Number => visitor.visit_string(util::term_to_str(&self.variant)?),
             _ => Err(Error::ExpectedStringable),
         }
-    }
-
-    forward_to_deserialize_any! {
-        bool i8 i16 i32 i64 i128 u8 u16 u32 u64 u128 f32 f64 char str string
-            bytes byte_buf option unit unit_struct newtype_struct seq tuple
-            tuple_struct map struct enum identifier ignored_any
     }
 }

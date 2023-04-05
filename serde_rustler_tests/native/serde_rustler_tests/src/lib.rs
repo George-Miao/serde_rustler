@@ -1,18 +1,24 @@
 //! Library implementing tests to be called from ExUnit.
 //!
-//! See `run_ser_test` and `run_de_test` for details about how to use `serde_rustler::Serializer` and `serde_rustler::Deserializer`.
+//! See `run_ser_test` and `run_de_test` for details about how to use
+//! `serde_rustler::Serializer` and `serde_rustler::Deserializer`.
 
-#[macro_use]
-extern crate rustler;
+// Allow deprecate for test purpose
+#![allow(deprecated)]
 
 mod json;
 mod test;
 mod types;
 
-use crate::types::Animal;
-use rustler::{types::tuple, Encoder, Env, NifResult, SchedulerFlags, Term};
-use serde_rustler::{atoms, from_term, to_term, Deserializer, Error, Serializer};
 use std::error::Error as StdError;
+
+use serde_rustler::{
+    atoms, from_term,
+    rustler::{rustler_export_nifs, types::tuple, Encoder, Env, NifResult, SchedulerFlags, Term},
+    to_term, Deserializer, Error, Serializer,
+};
+
+use crate::types::Animal;
 
 rustler_export_nifs! {
     "Elixir.SerdeRustlerTests",
@@ -42,7 +48,8 @@ pub fn readme<'a>(env: Env<'a>, args: &[Term<'a>]) -> NifResult<Term<'a>> {
     to_term(env, animal).map_err(|err| err.into())
 }
 
-/// Deserializes anything from an Elixir term and subsequently serializes the result back into an Elixir term, returning it.
+/// Deserializes anything from an Elixir term and subsequently serializes the
+/// result back into an Elixir term, returning it.
 #[inline]
 pub fn transcode<'a>(env: Env<'a>, args: &[Term<'a>]) -> NifResult<Term<'a>> {
     tag_tuple(env, || {

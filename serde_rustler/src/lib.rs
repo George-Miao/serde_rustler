@@ -2,12 +2,6 @@
 
 #![recursion_limit = "196"]
 
-#[macro_use]
-extern crate lazy_static;
-#[macro_use]
-extern crate rustler;
-extern crate rustler_codegen;
-
 pub mod atoms;
 mod de;
 mod error;
@@ -16,4 +10,6 @@ mod util;
 
 pub use de::{from_term, Deserializer};
 pub use error::Error;
+pub use rustler;
+pub use rustler_codegen;
 pub use ser::{to_term, Serializer};
